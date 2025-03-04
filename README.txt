@@ -1,28 +1,48 @@
-REMIX DEFAULT WORKSPACE
+# Rock-Paper-Scissors-Lizard-Spock (RPSLS) Solidity Game
 
-Remix default workspace is present when:
-i. Remix loads for the very first time 
-ii. A new workspace is created with 'Default' template
-iii. There are no files existing in the File Explorer
+## Overview
+This smart contract implements the Rock-Paper-Scissors-Lizard-Spock (RPSLS) game using the commit-reveal scheme to prevent cheating and front-running attacks. The game is played between two allowed players, and the winner is determined based on predefined game rules.
 
-This workspace contains 3 directories:
+## Files Structure
 
-1. 'contracts': Holds three contracts with increasing levels of complexity.
-2. 'scripts': Contains four typescript files to deploy a contract. It is explained below.
-3. 'tests': Contains one Solidity test file for 'Ballot' contract & one JS test file for 'Storage' contract.
+### 1. `CommitReveal.sol`
+This contract handles the commit-reveal mechanism, allowing players to securely commit their choices before revealing them later.
 
-SCRIPTS
+- **Functions:**
+  - `commit(bytes32 dataHash)`: Allows a player to commit their hashed move.
+  - `reveal(bytes32 revealHash)`: Allows a player to reveal their move and validate it against the committed hash.
+  - `getHash(bytes32 data)`: Helper function to generate a keccak256 hash.
 
-The 'scripts' folder has four typescript files which help to deploy the 'Storage' contract using 'web3.js' and 'ethers.js' libraries.
+### 2. `GameLogic.sol`
+Extends `CommitReveal.sol` and implements the game logic for RPSLS.
 
-For the deployment of any other contract, just update the contract name from 'Storage' to the desired contract and provide constructor arguments accordingly 
-in the file `deploy_with_ethers.ts` or  `deploy_with_web3.ts`
+- **Functions:**
+  - `determineWinner(uint8 p1, uint8 p2)`: Determines the winner based on RPSLS rules.
+  - Input validation ensures that player choices are within the range (0-4).
 
-In the 'tests' folder there is a script containing Mocha-Chai unit tests for 'Storage' contract.
+### 3. `RPSLS.sol`
+The main contract that manages the game lifecycle, player interactions, and bet handling.
 
-To run a script, right click on file name in the file explorer and click 'Run'. Remember, Solidity file must already be compiled.
-Output from script will appear in remix terminal.
+- **Functions:**
+  - `commit(bytes32 dataHash)`: Player 1 commits a hashed move and places a bet.
+  - `join(bytes32 dataHash)`: Player 2 joins the game and commits a move.
+  - `reveal(bytes32 revealHash)`: Players reveal their moves and determine the winner.
+  - `finalizeGame(bytes32 player2Choice)`: Determines the winner and transfers the bet.
+  - `timeout()`: If a player fails to reveal in time, funds are refunded accordingly.
+  - `resetGame()`: Resets the game state after completion.
 
-Please note, require/import is supported in a limited manner for Remix supported modules.
-For now, modules supported by Remix are ethers, web3, swarmgw, chai, multihashes, remix and hardhat only for hardhat.ethers object/plugin.
-For unsupported modules, an error like this will be thrown: '<module_name> module require is not supported by Remix IDE' will be shown.
+## How It Works
+
+1. **Commit Phase:**
+   - Players commit their moves using a keccak256 hash.
+   - Example: `keccak256(abi.encodePacked(choice, secret))` ensures hidden choice.
+
+2. **Reveal Phase:**
+   - Players reveal their moves along with the secret used during commitment.
+   - If both players reveal, the winner is determined.
+
+3. **Game Settlement:**
+   - If one player wins, they receive the total bet.
+   - If it's a tie, both players get their bet refunded.
+   - If a player fails to reveal within 250 blocks, a timeout function allows withdrawal.
+
