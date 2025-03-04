@@ -1,11 +1,11 @@
-# Rock-Paper-Scissors-Lizard-Spock (RPSLS) Solidity Game
+# Rock-Paper-Scissors-Lizard-Spock (RPSLS) Solidity Game #
 
-## Overview
+## Overview ##
 This smart contract implements the Rock-Paper-Scissors-Lizard-Spock (RPSLS) game using the commit-reveal scheme to prevent cheating and front-running attacks. The game is played between two allowed players, and the winner is determined based on predefined game rules.
 
-## Files Structure
+## Files Structure ##
 
-### 1. `CommitReveal.sol`
+### 1. `CommitReveal.sol` ###
 This contract handles the commit-reveal mechanism, allowing players to securely commit their choices before revealing them later.
 
 - **Functions:**
@@ -13,14 +13,14 @@ This contract handles the commit-reveal mechanism, allowing players to securely 
   - `reveal(bytes32 revealHash)`: Allows a player to reveal their move and validate it against the committed hash.
   - `getHash(bytes32 data)`: Helper function to generate a keccak256 hash.
 
-### 2. `GameLogic.sol`
+### 2. `GameLogic.sol` ###
 Extends `CommitReveal.sol` and implements the game logic for RPSLS.
 
 - **Functions:**
   - `determineWinner(uint8 p1, uint8 p2)`: Determines the winner based on RPSLS rules.
   - Input validation ensures that player choices are within the range (0-4).
 
-### 3. `RPSLS.sol`
+### 3. `RPSLS.sol` ###
 The main contract that manages the game lifecycle, player interactions, and bet handling.
 
 - **Functions:**
@@ -31,7 +31,7 @@ The main contract that manages the game lifecycle, player interactions, and bet 
   - `timeout()`: If a player fails to reveal in time, funds are refunded accordingly.
   - `resetGame()`: Resets the game state after completion.
 
-## How It Works
+## How It Works ##
 
 1. **Commit Phase:**
    - Players commit their moves using a keccak256 hash.
